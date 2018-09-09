@@ -30,7 +30,7 @@ from correios.models.posting import (
     PostingList,
     TrackingCode,
 )
-from correios.models.user import ExtraService, PostingCard, Service
+from correios.models.user import ExtraService, PostingCard, Service, User
 from correios.serializers import PostingListSerializer
 from correios.utils import get_resource_path, to_decimal
 from correios.xml_utils import fromstring
@@ -42,7 +42,10 @@ class SigepEnvironment(models.Model):
     
     usuario = models.CharField(max_length=50, blank=False, null=False)
     senha = models.CharField(max_length=50, blank=False, null=False)
+    cnpj = models.CharField(max_length=14, blank=False, null=False)
+    nomeEmpresa = models.CharField(max_length=50, blank=False, null=False)
     ambiente = models.CharField(max_length=20, blank=False, null=False)
+    ativo = models.BooleanField(default=False)
 
     def __str__(self):
         return self.usuario + " - " + self.ambiente
@@ -50,7 +53,8 @@ class SigepEnvironment(models.Model):
 
 class Servico(models.Model):
 
-    codigo = models.IntegerField(primary_key=True, blank=False, null=False)
+    idServico = models.IntegerField(blank=False, null=False)
+    codigo = models.IntegerField(blank=False, null=False)
     descr = models.CharField(max_length=100, blank=False, null=False)
     
     def __str__(self):
@@ -61,6 +65,7 @@ class CartaoPostagem(models.Model):
     
     nroCartao = models.CharField(max_length=10, blank=False, null=False)
     nroContrato = models.CharField(max_length=10, blank=False, null=False)
+    codAdmin = models.CharField(max_length=8, blank=False, null=False)
     servicos = models.ManyToManyField(Servico)
     ativo = models.BooleanField(default=True)
     vencimento = models.DateField(auto_now=False, auto_now_add=False, blank=False, null=False)
@@ -75,16 +80,16 @@ class CartaoPostagem(models.Model):
         return [contrato[0], cartao[0]]
 
     def updateCartaoServicos(self):
-        env = SigepEnvironment.objects.first()
+        env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
         user = cliente.get_user (self.nroContrato, self.nroCartao)
         contrato, cartao = CartaoPostagem._getContratoAndCartao(user.contracts, self.nroContrato, self.nroCartao)
         
         for s in cartao.services:
-            self.servicos.create (codigo=s.code, descr=s.display_name)
+            self.servicos.create (idServico=s.id, codigo=s.code, descr=s.display_name)
 
     def getCartaoStatus(self):
-        env = SigepEnvironment.objects.first()
+        env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
         status = cliente._auth_call('getStatusCartaoPostagem', self.nroCartao)
         if status == 'Normal':
@@ -109,7 +114,7 @@ class Endereco(models.Model):
     default = models.BooleanField(default=False)
 
     def getEnderecoByCep(self):
-        env = SigepEnvironment.objects.first()
+        env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
         zip = cliente.find_zipcode(ZipCode(self.cep))
         self.logradouro = zip.address
@@ -143,7 +148,7 @@ class Telefone(models.Model):
 class Destinatario(models.Model):
     
     nome = models.CharField(max_length=50, blank=False, null=False)
-    cpfCnpj = models.CharField(max_length=30, blank=False, null=False)
+    cpfCnpj = models.CharField(max_length=14, blank=False, null=False)
     telefones = models.ForeignKey(Telefone, on_delete=models.CASCADE)
     email = models.CharField(max_length=50, blank=True, null=True)
     enderecos = models.ManyToManyField(Endereco)
@@ -155,7 +160,7 @@ class Destinatario(models.Model):
 class Remetente(models.Model):
     
     nome = models.CharField(max_length=50, blank=False, null=False)
-    cpfCnpj = models.CharField(max_length=30, blank=False, null=False)
+    cpfCnpj = models.CharField(max_length=14, blank=False, null=False)
     telefones = models.ForeignKey(Telefone, on_delete=models.CASCADE)
     email = models.CharField(max_length=50, blank=True, null=True)
     enderecos = models.ManyToManyField(Endereco)
@@ -168,31 +173,61 @@ class Remetente(models.Model):
 class Embalagem(models.Model):
 
     descr = models.CharField(max_length=50, blank=False, null=False)
-    peso = models.PositiveIntegerField (blank=False, null=False)
-    ativo = models.BooleanField (default=False)
+    peso = models.FloatField(default=0.0)
+    ativo = models.BooleanField (default=False, blank=False, null=False)
     tipo = models.PositiveIntegerField (blank=False, null=False)
-    comprimento = models.PositiveIntegerField(blank=False, null=False)
-    largura = models.PositiveIntegerField(blank=False, null=False)
-    altura = models.PositiveIntegerField(blank=False, null=False)
-    obs = models.CharField(max_length=300, blank=False, null=True)
+    comprimento = models.FloatField (default=0.0, blank=False, null=False)
+    largura = models.FloatField(default=0.0, blank=False, null=False)
+    altura = models.FloatField(default=0.0, blank=False, null=False)
+    diametro = models.FloatField(default=0.0, blank=False, null=False)
+    obs = models.CharField(max_length=300, blank=True, null=True)
 
     def __str__(self):
-        return 
+        return self.descr
 
 # TODO
+# TODO: Gerar código de rastreamento através do método _auth_call
 class ObjetoPostal(models.Model):
-
+    destinatario = models.ManyToManyField(Destinatario)
+    servico = models.ForeignKey(Servico, on_delete=models.PROTECT)
+    codRastreamento = models.CharField(max_length=100, blank=False, null=False)
+    descr = models.CharField(max_length=50, blank=False, null=False)
+    embalagem = models.OneToOneField(Embalagem, on_delete=models.PROTECT, blank=True, null=True)
+    qtdObj = models.PositiveIntegerField(blank=True, null=True)
+    peso = models.PositiveIntegerField (blank=False, null=False)
+    tipo = models.PositiveIntegerField (blank=False, null=False)
+    comprimento = models.FloatField (default=0.0, blank=False, null=False)
+    largura = models.FloatField(default=0.0, blank=False, null=False)
+    altura = models.FloatField(default=0.0, blank=False, null=False)
+    diametro = models.FloatField(default=0.0, blank=False, null=False)
+    nf = models.CharField(max_length=20, blank=True, null=True)
+    nroPedido = models.CharField(max_length=20, blank=True, null=True)
+    obs = models.CharField(max_length=300, blank=True, null=True)
 
     def __str__(self):
-        return 
+        return self.codRastreamento
+    
+    def getCodRastreamento (self):
+        env = SigepEnvironment.objects.get(ativo=True)
+        cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
+        user = User (env.nomeEmpresa, env.cnpj)
+        service = Service.get(self.servicos.codigo)
+        self.codRastreamento = cliente.request_tracking_codes(user, service, 1)[0].code
+        
 
-    def __unicode__(self):
-        return 
 # TODO
 class PreListaPostagem(models.Model):
-    
-    def __str__(self):
-        return 
+    remetente = models.OneToOneField(Remetente, on_delete=models.PROTECT)
+    cartaoPostagem = models.OneToOneField(CartaoPostagem, on_delete=models.PROTECT)
+    objetosPostais = models.ForeignKey(ObjetoPostal, on_delete=models.PROTECT)
+    fechada = models.BooleanField(default=False)
+    dataCriacao = models.DateField(auto_now=True, blank=False, null=False)
+    qtdObjetos = models.PositiveIntegerField(blank=False, null=False)
 
-    def __unicode__(self):
-        return 
+    def __str__(self):
+        return self.id
+
+    def fechaPLP (self):
+        env = SigepEnvironment.objects.get(ativo=True)
+        cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
+        
