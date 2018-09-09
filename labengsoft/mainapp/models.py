@@ -185,8 +185,7 @@ class Embalagem(models.Model):
     def __str__(self):
         return self.descr
 
-# TODO
-# TODO: Gerar código de rastreamento através do método _auth_call
+
 class ObjetoPostal(models.Model):
     destinatario = models.ManyToManyField(Destinatario)
     servico = models.ForeignKey(Servico, on_delete=models.PROTECT)
@@ -214,8 +213,6 @@ class ObjetoPostal(models.Model):
         service = Service.get(self.servicos.codigo)
         self.codRastreamento = cliente.request_tracking_codes(user, service, 1)[0].code
         
-
-# TODO
 class PreListaPostagem(models.Model):
     remetente = models.OneToOneField(Remetente, on_delete=models.PROTECT)
     cartaoPostagem = models.OneToOneField(CartaoPostagem, on_delete=models.PROTECT)
@@ -227,7 +224,7 @@ class PreListaPostagem(models.Model):
     def __str__(self):
         return self.id
 
+    # TODO: Estudar a criação dos objetos PostingList e ShippingLabel
     def fechaPLP (self):
         env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
-        
