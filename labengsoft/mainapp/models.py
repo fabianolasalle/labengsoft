@@ -230,4 +230,3 @@ class PreListaPostagem(models.Model):
     def fechaPLP (self):
         env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
-        
