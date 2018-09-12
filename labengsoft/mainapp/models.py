@@ -389,7 +389,6 @@ class PreListaPostagem(models.Model):
         # Conexão com o webservice
         env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
-<<<<<<< HEAD
 
         # Cria os objetos necessários para o fechamento da PLP
         cartao = CartaoPostagem.objects.get(ativo=True)
@@ -409,5 +408,3 @@ class PreListaPostagem(models.Model):
         
         # Fechamento da PLP.
         plp = cliente.close_posting_list(plp,cartao.nroCartao)
-=======
->>>>>>> 0af253d725bcda280294c833bca9e0caadef5b18
