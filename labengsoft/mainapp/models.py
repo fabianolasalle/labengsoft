@@ -280,7 +280,7 @@ class Embalagem(models.Model):
     """
     descr = models.CharField(max_length=50, blank=True, null=True)
     peso = models.FloatField(default=0.0)
-    ativo = models.BooleanField (blank=True, null=True)
+    ativo = models.NullBooleanField (blank=True, null=True)
     tipo = models.PositiveIntegerField (default=1, blank=True, null=True)
     comprimento = models.FloatField (default=0.0, blank=False, null=False)
     largura = models.FloatField(default=0.0, blank=False, null=False)
