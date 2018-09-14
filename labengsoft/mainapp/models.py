@@ -102,7 +102,7 @@ class CartaoPostagem(models.Model):
         return self.nroCartao
 
     @staticmethod
-    def _getContratoAndCartao(contratos, nroContrato, nroCartao):
+    def __getContratoAndCartao(contratos, nroContrato, nroCartao):
         """
         Filtra nos contratos do usuário o contrato e o cartão correspondentes.
         Retorna uma lista contendo, respectivamente, o contrato e cartão encontrados.
@@ -124,7 +124,7 @@ class CartaoPostagem(models.Model):
 
         # Consulta o usuário e filtra o contrato e cartão desejados
         user = cliente.get_user (self.nroContrato, self.nroCartao)
-        contrato, cartao = CartaoPostagem._getContratoAndCartao(user.contracts, self.nroContrato, self.nroCartao)
+        contrato, cartao = CartaoPostagem.__getContratoAndCartao(user.contracts, self.nroContrato, self.nroCartao)
 
         # Atualiza a tabela de serviços
         for s in cartao.services:
@@ -148,7 +148,7 @@ class CartaoPostagem(models.Model):
 
         # Pesquisa a data de vencimento do cartão de postagem
         user = cliente.get_user (self.nroContrato, self.nroCartao)
-        contrato, cartao = CartaoPostagem._getContratoAndCartao(user.contracts, self.nroContrato, self.nroCartao)
+        contrato, cartao = CartaoPostagem.__getContratoAndCartao(user.contracts, self.nroContrato, self.nroCartao)
         self.vencimento = contrato.end_date
         
 
