@@ -97,7 +97,7 @@ class CartaoPostagem(models.Model):
     ativo = models.BooleanField(default=True)
     vencimento = models.DateField(auto_now=False, auto_now_add=False, blank=False, null=False)
     codDR = models.IntegerField(blank=False, null=False)
-
+    
     def __str__(self):
         return self.nroCartao
 
@@ -173,19 +173,22 @@ class Endereco(models.Model):
     cidade = models.CharField(max_length=30, blank=False, null=False)
     uf = models.CharField(max_length=2, blank=False, null=False)
     default = models.BooleanField(default=False)
-
-    def getEnderecoByCep(self):
+    
+    @staticmethod
+    def getEnderecoByCep(cep):
         """ Preenche os dados de endereço com base na pesquisa por CEP dos Correios."""
         # Conexão com o webservice
         env = SigepEnvironment.objects.get(ativo=True)
         cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
         
         # Pesquisa por CEP e preenchimento dos demais dados
-        zip = cliente.find_zipcode(ZipCode(self.cep))
-        self.logradouro = zip.address
-        self.bairro = zip.district
-        self.cidade = zip.city
-        self.uf = zip.state.code
+        endereco = Endereco()
+        zip = cliente.find_zipcode(ZipCode(cep))
+        endereco.logradouro = zip.address
+        endereco.bairro = zip.district
+        endereco.cidade = zip.city
+        endereco.uf = zip.state.code
+        return endereco
 
     #def __str__(self):
     #    return 
@@ -237,6 +240,7 @@ class Destinatario(models.Model):
     telefones = models.ForeignKey(Telefone, on_delete=models.PROTECT)
     email = models.CharField(max_length=50, blank=True, null=True)
     enderecos = models.ManyToManyField(Endereco)
+    grupos = models.ManyToManyField(GrupoDestinatario, blank=True, null=True)
 
     def __str__(self):
         return self.nome

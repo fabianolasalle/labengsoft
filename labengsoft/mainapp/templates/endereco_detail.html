@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Detalhes do endereço:</h2>
+    <br/>
+    Nome:&nbsp;{{ endereco.logradouro }}<br/>
+    Número:&nbsp;{{ endereco.numero }}<br/>
+    {% if endereco.complemento %}
+        Complemento:&nbsp;{{ endereco.complemento }}<br/>
+    {% endif %}
+    Bairro:&nbsp;{{ endereco.bairro }}<br/>
+    Cidade:&nbsp;{{ endereco.cidade }}<br/>
+    UF:&nbsp{{ endereco.uf }}<br/>
+    CEP:&nbsp;{{ endereco.cep }}
+{% endblock %}
+    
