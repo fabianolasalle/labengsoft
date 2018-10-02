@@ -190,8 +190,8 @@ class Endereco(models.Model):
         endereco.uf = zip.state.code
         return endereco
 
-    #def __str__(self):
-    #    return 
+    def __str__(self):
+        return ', '.join([self.logradouro, self.numero, str(self.complemento), self.bairro, self.cidade, self.uf])
 
     #def __unicode__(self):
     #    return 
