@@ -222,7 +222,7 @@ class Telefone(models.Model):
     default = models.BooleanField(default=False, blank=False, null=False)
     
     def __str__(self):
-        return 
+        return self.numero
 
 
 class Destinatario(models.Model):

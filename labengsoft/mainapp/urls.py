@@ -19,9 +19,21 @@ urlpatterns = [
     path('destinatarios/detail/<int:pk>', DestinatarioDetailView.as_view(), name='destinatarios-detail'),
     path('destinatarios/create/', DestinatarioCreateView.as_view(), name='destinatarios-create'),
 
-    path('telefones/', TelefonesView.as_view(), name='destinatarios-main'),
-    path('telefones/update/<int:pk>', DestinatarioUpdateView.as_view(), name='destinatarios-update'),
-    path('telefones/delete/<int:pk>', DestinatarioDeleteView.as_view(), name='destinatarios-delete'),
-    path('telefones/detail/<int:pk>', DestinatarioDetailView.as_view(), name='destinatarios-detail'),
-    path('telefones/create/', DestinatarioCreateView.as_view(), name='destinatarios-create'),
+    path('telefones/', TelefonesView.as_view(), name='telefones-main'),
+    path('telefones/update/<int:pk>', TelefoneUpdateView.as_view(), name='telefones-update'),
+    path('telefones/delete/<int:pk>', TelefoneDeleteView.as_view(), name='telefones-delete'),
+    path('telefones/detail/<int:pk>', TelefoneDetailView.as_view(), name='telefones-detail'),
+    path('telefones/create/', TelefoneCreateView.as_view(), name='telefones-create'),
+
+    path('grupodest/', GruposDestView.as_view(), name='grupodest-main'),
+    path('grupodest/update/<int:pk>', GrupoDestUpdateView.as_view(), name='grupodest-update'),
+    path('grupodest/delete/<int:pk>', GrupoDestDeleteView.as_view(), name='grupodest-delete'),
+    path('grupodest/detail/<int:pk>', GrupoDestDetailView.as_view(), name='grupodest-detail'),
+    path('grupodest/create/', GrupoDestCreateView.as_view(), name='destinatarios-create'),
+
+    #path('grupodest/', TelefonesView.as_view(), name='destinatarios-main'),
+    #path('grupodest/update/<int:pk>', DestinatarioUpdateView.as_view(), name='destinatarios-update'),
+    #path('grupodest/delete/<int:pk>', DestinatarioDeleteView.as_view(), name='destinatarios-delete'),
+    #path('grupodest/detail/<int:pk>', DestinatarioDetailView.as_view(), name='destinatarios-detail'),
+    #path('grupodest/create/', DestinatarioCreateView.as_view(), name='destinatarios-create'),
 ]

@@ -1,0 +1,11 @@
+{% extends 'mainapp/base.html' %}
+{% block content %}
+    <h2>Embalagens</h2>
+    <div class="list-group">
+        {% for embalagem in object_list %}
+            <a href= {% url 'embalagens-detail' embalagem.id %} class="list-group-item list-group-item-action">
+                {{ embalagem }}
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}

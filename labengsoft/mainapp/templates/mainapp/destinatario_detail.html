@@ -1,16 +1,11 @@
 {% extends 'mainapp/base.html' %}
 
 {% block content %}
-    <h2>Detalhes do endereço:</h2>
+    <h2>Detalhes do destinatário:</h2>
     <br/>
-    Nome:&nbsp;{{ endereco.logradouro }}<br/>
-    Número:&nbsp;{{ endereco.numero }}<br/>
-    {% if endereco.complemento %}
-        Complemento:&nbsp;{{ endereco.complemento }}<br/>
-    {% endif %}
-    Bairro:&nbsp;{{ endereco.bairro }}<br/>
-    Cidade:&nbsp;{{ endereco.cidade }}<br/>
-    UF:&nbsp{{ endereco.uf }}<br/>
-    CEP:&nbsp;{{ endereco.cep }}
+    Nome:&nbsp;{{ destinatario.nome }}<br/>
+    CPF/CNPJ:&nbsp;{{ destinatario.cpfCnpj }}<br/>
+    Telefones:&nbsp;{{ destinatario.telefones }}<br/>
+    E-mail:&nbsp;{{ destinatario.email }}<br/>
 {% endblock %}
     

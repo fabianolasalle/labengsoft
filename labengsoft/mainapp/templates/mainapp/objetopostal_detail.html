@@ -1,0 +1,17 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+    <h2>Detalhes do objeto postal:</h2>
+    <br/>
+    Código de rastreamento:&nbsp;{{ objpostal.codRastreamento }}<br/>
+    Destinatário:&nbsp;{{ objpostal.codRastreamento }}<br/>
+    Endereço:&nbsp;{{ objpostal.endSelecionado }}<br/>
+    Serviço:&nbsp;{{ objpostal.servico }}<br/>
+    Descrição:&nbsp;{{ objpostal.descr }}<br/>
+    Embalagem:&nbsp;{{ objpostal.embalagem }}<br/>
+    Quantidade de objetos:&nbsp;{{ objpostal.qtdObj }}<br/>
+    Nota fiscal:&nbsp;{{ objpostal.nf }}<br/>
+    Número do pedido:&nbsp;{{ objpostal.nroPedido }}<br/>
+    Obervações:&nbsp;{{ objpostal.obs }}<br/>
+{% endblock %}
+    

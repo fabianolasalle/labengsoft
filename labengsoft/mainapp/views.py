@@ -69,7 +69,7 @@ class DestinatarioDetailView(DetailView):
     context_object_name = 'destinatario'
 
 class DestinatariosView (ListView):
-    model = Endereco
+    model = Destinatario
 
 # ========================================
 
@@ -86,11 +86,11 @@ class TelefoneCreateView(CreateView):
 class TelefoneUpdateView(UpdateView):
     model = Telefone
     fields = '__all__'
-    success_url = reverse_lazy('telefone-main')
+    success_url = reverse_lazy('telefones-main')
 
 class TelefoneDeleteView (DeleteView):
     model = Telefone
-    success_url = reverse_lazy('telefone-main')
+    success_url = reverse_lazy('telefones-main')
 
 class TelefoneDetailView(DetailView):
     model = Telefone
@@ -121,7 +121,7 @@ class GrupoDestDeleteView (DeleteView):
 
 class GrupoDestDetailView(DetailView):
     model = GrupoDestinatario
-    context_object_name = 'grupo'
+    context_object_name = 'grupodest'
 
 class GruposDestView (ListView):
     model = GrupoDestinatario
@@ -178,7 +178,7 @@ class ObjPostalDeleteView (DeleteView):
 
 class ObjPostalDetailView(DetailView):
     model = ObjetoPostal
-    context_object_name = 'objpostal-main'
+    context_object_name = 'objpostal'
 
 class ObjPostalView (ListView):
     model = ObjetoPostal

@@ -1,0 +1,11 @@
+{% extends 'mainapp/base.html' %}
+{% block content %}
+    <h2>Grupos de destinatários</h2>
+    <div class="list-group">
+        {% for grupodest in object_list %}
+            <a href= {% url 'grupodest-detail' grupodest.id %} class="list-group-item list-group-item-action">
+                {{ grupodest }}
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}

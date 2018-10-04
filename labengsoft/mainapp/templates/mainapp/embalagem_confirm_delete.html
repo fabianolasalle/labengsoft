@@ -1,0 +1,9 @@
+{% extends 'mainapp/base.html' %}
+{% load bootstrap %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Você tem certeza que deseja excluir {{ object.descr }}?</p>
+        <button type="submit" class="btn btn-danger btn-large">Confirmar</button>    
+    </form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'mainapp/base.html' %}
+
+{% block content %}
+    <h2>Detalhes da embalagem:</h2>
+    <br/>
+    Descrição:&nbsp;{{ embalagem.descr }}<br/>
+    Ativo:&nbsp;{{ embalagem.ativo }}<br/>
+    Peso:&nbsp;{{ embalagem.peso }}<br/>
+    Tipo:&nbsp;{{ embalagem.tipo }}<br/>
+    Comprimento:&nbsp;{{ embalagem.comprimento }}<br/>
+    Largura:&nbsp;{{ embalagem.largura }}<br/>
+    Altura:&nbsp;{{ embalagem.altura }}<br/>
+    Diâmetro:&nbsp;{{ embalagem.diametro }}<br/>
+    Observações:&nbsp;{{ embalagem.obs }}<br/>
+{% endblock %}
+    
