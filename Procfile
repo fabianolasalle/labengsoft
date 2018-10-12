@@ -1,1 +1,1 @@
-web: gunicorn labengsoft.labengsoft.wsgi:application
+web: gunicorn labengsoft.labengsoft.wsgi:application --log-file -
