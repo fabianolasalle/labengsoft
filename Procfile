@@ -1,1 +1,1 @@
-web: gunicorn labengsoft.labengsoft.wsgi:application --log-file -
+web: python labengsoft/manage.py runserver 0.0.0.0:80

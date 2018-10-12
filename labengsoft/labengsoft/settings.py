@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrapform',
-    'labengsoft.mainapp',
+    'mainapp',
 ]
 
 MIDDLEWARE = [
