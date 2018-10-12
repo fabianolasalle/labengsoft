@@ -1,1 +1,1 @@
-web: python labengsoft/manage.py runserver 0.0.0.0:80
+web: python labengsoft/manage.py runserver
