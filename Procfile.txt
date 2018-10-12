@@ -1,1 +1,1 @@
-web: python labengsoft/manage.py runserver
+web: gunicorn
