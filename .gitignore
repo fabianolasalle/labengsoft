@@ -104,4 +104,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 .vscode/settings.json
-labengsoft/mainapp/migrations/
+#labengsoft/mainapp/migrations/
