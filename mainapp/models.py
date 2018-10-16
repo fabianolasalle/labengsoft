@@ -93,10 +93,10 @@ class CartaoPostagem(models.Model):
     nroCartao = models.CharField(max_length=10, blank=False, null=False)
     nroContrato = models.CharField(max_length=10, blank=False, null=False)
     codAdmin = models.CharField(max_length=8, blank=False, null=False)
-    servicos = models.ManyToManyField(Servico)
+    servicos = models.ManyToManyField(Servico, blank=True, null=True)
     ativo = models.BooleanField(default=True)
     vencimento = models.DateField(auto_now=False, auto_now_add=False, blank=False, null=False)
-    codDR = models.IntegerField(blank=False, null=False)
+    codDR = models.IntegerField(blank=True, null=True)
     
     def __str__(self):
         return self.nroCartao
