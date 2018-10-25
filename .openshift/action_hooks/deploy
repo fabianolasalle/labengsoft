@@ -1,0 +1,3 @@
+PYTHONPATH=$OPENSHIFT_REPO_DIR/labengsoft/labengsoft/
+django-admin.py migrate --pythonpath=$PYTHONPATH
+python $PYTHONPATH/manage.py runserver

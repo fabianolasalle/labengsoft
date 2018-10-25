@@ -1,0 +1,7 @@
+django==2.1
+correios==4.7.1
+django_heroku==0.3.1
+django-bootstrap-form==3.4
+lxml==4.2.1
+requests
+zeep==3.1.0

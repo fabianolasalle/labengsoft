@@ -20,7 +20,7 @@ parts/
 sdist/
 var/
 wheels/
-migrations/
+#migrations/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -104,4 +104,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 .vscode/settings.json
-labengsoft/mainapp/migrations/
+#labengsoft/mainapp/migrations/
