@@ -1,28 +1,39 @@
-{% extends 'mainapp/base.html' %}
 {% load bootstrap %}
-{% block content %}
-    <script type='text/javascript'>
-        $(function () {
-            $('#id_cep').blur(function () {
-                var cep = $(this).val();
-                $.ajax({
-                    url: '../pesquisaCep/' + cep,
-                    dataType: 'json',
-                    success:function (data) {
-                        data = eval(data);
-                        document.getElementById('id_logradouro').value = data[0].fields.logradouro;
-                        document.getElementById('id_bairro').value = data[0].fields.bairro;
-                        document.getElementById('id_cidade').value = data[0].fields.cidade;
-                        document.getElementById('id_uf').value = data[0].fields.uf;
-                    }
-                })
+<script type='text/javascript'>
+    $(function () {
+        $('#id_cep').blur(function () {
+            var cep = $(this).val();
+            $.ajax({
+                url: '../../enderecos/pesquisaCep/' + cep,
+                dataType: 'json',
+                success: function (data) {
+                    data = eval(data);
+                    document.getElementById('id_logradouro').value = data[0].fields.logradouro;
+                    document.getElementById('id_bairro').value = data[0].fields.bairro;
+                    document.getElementById('id_cidade').value = data[0].fields.cidade;
+                    document.getElementById('id_uf').value = data[0].fields.uf;
+                }
             })
-        });
-    </script>
-    <form method="post">
-        {% csrf_token %}
-        {{ form|bootstrap_horizontal:'col-sm-4' }}
-        <button type="submit" class="btn btn-success btn-large">Salvar</button>
-        <button type="reset" class="btn btn-danger btn-large">Limpar formulário</button>
-    </form>
-{% endblock %}
+        })
+    });
+</script>
+<form method="post" action="">
+  {% csrf_token %}
+
+ <div class="modal-header">
+    <h5 class="modal-title">Adicionar Endereço</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    {{ form|bootstrap_horizontal:'col-sm-4' }}
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="submit-btn btn btn-primary">Create</button>
+  </div>
+
+</form>

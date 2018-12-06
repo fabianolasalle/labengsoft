@@ -37,6 +37,7 @@ from correios.serializers import PostingListSerializer
 from correios.utils import get_resource_path, to_decimal
 from correios.xml_utils import fromstring
 from correios import client as correios
+from zeep import Client
 
 # Create your models here.
 
@@ -179,15 +180,27 @@ class Endereco(models.Model):
         """ Preenche os dados de endereço com base na pesquisa por CEP dos Correios."""
         # Conexão com o webservice
         env = SigepEnvironment.objects.get(ativo=True)
-        cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
-        
+        #cliente = correios.Correios(username=env.usuario, password=env.senha, environment=env.ambiente)
+        if env.ambiente == 'test':
+            cliente = Client('https://apphom.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl')
+        else:
+            cliente = Client('https://apps.correios.com.br/SigepMasterJPA/AtendeClienteService/AtendeCliente?wsdl')
         # Pesquisa por CEP e preenchimento dos demais dados
         endereco = Endereco()
-        zip = cliente.find_zipcode(ZipCode(cep))
-        endereco.logradouro = zip.address
-        endereco.bairro = zip.district
-        endereco.cidade = zip.city
-        endereco.uf = zip.state.code
+
+        # Rotina foi alterada devido à problemas com a classe dos correios
+        #zip = cliente.find_zipcode(ZipCode(cep))
+        #endereco.logradouro = zip.address
+        #endereco.bairro = zip.district
+        #endereco.cidade = zip.city
+        #endereco.uf = zip.state.code
+
+        zip = cliente.service.consultaCEP(str(cep))
+        endereco.logradouro = zip['end']
+        endereco.bairro = zip['bairro']
+        endereco.cidade = zip['cidade']
+        endereco.uf = zip['uf']
+        
         return endereco
 
     def __str__(self):
@@ -209,59 +222,38 @@ class GrupoDestinatario(models.Model):
     def __str__(self):
         return self.nome 
 
-class Telefone(models.Model):
-    """
-    Model para cadastro de telefones dos contatos
-
-    numero -- Número de telefone com DDD
-    tipo -- Tipo de telefone. Fixo = 1, Celular = 2, Fax = 3 (padrão 1)
-    default -- Telefone padrão
-    """
-    numero = models.CharField(max_length=15, blank=False, null=False)
-    tipo = models.IntegerField(default=1, blank=False, null=False)
-    default = models.BooleanField(default=False, blank=False, null=False)
-    
-    def __str__(self):
-        return self.numero
-
-
-class Destinatario(models.Model):
+class Pessoa(models.Model):
     """
     Model de destinatário
 
     nome -- Nome do destinatário
     cpfCnpj -- CPF ou CNPJ do destinatário
-    telefones -- Telefones do destinatário
+    telefone -- Telefone preferencial
+    celular -- Celular (opcional)
+    fax -- Fax (opcional)
     email -- E-mail do destinatário (opcional)
     enderecos -- Endereços do destinatário
     """
     nome = models.CharField(max_length=50, blank=False, null=False)
     cpfCnpj = models.CharField(max_length=14, blank=False, null=False)
-    telefones = models.ForeignKey(Telefone, on_delete=models.PROTECT)
+    telefone = models.CharField(max_length=11, blank=False, null=False)
+    celular = models.CharField(max_length=11, blank=True, null=True)
+    fax = models.CharField(max_length=11, blank=True, null=True)
     email = models.CharField(max_length=50, blank=True, null=True)
     enderecos = models.ManyToManyField(Endereco)
-    grupos = models.ManyToManyField(GrupoDestinatario, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+class Destinatario(Pessoa):
+
+    grupos = models.ManyToManyField(GrupoDestinatario)
 
     def __str__(self):
         return self.nome
 
 
-class Remetente(models.Model):
-    """
-    Model de remetente
-
-    nome -- Nome do remetente
-    cpfCnpj -- CPF ou CNPJ do remetente
-    telefones -- Telefones do remetente
-    email -- E-mail do remetente (opcional)
-    enderecos -- Endereços do remetente
-    cartaoPostagem -- Cartões de postagem do remetente
-    """
-    nome = models.CharField(max_length=50, blank=False, null=False)
-    cpfCnpj = models.CharField(max_length=14, blank=False, null=False)
-    telefones = models.ForeignKey(Telefone, on_delete=models.PROTECT)
-    email = models.CharField(max_length=50, blank=True, null=True)
-    enderecos = models.ManyToManyField(Endereco)
+class Remetente(Pessoa):
     cartaoPostagem = models.ManyToManyField(CartaoPostagem)
 
     def __str__(self):

@@ -1,40 +1,55 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import *
 from django.core import serializers
 from .models import *
 from django.urls import reverse_lazy
+from django.forms import inlineformset_factory
+from .forms import *
+from django.contrib.messages.views import SuccessMessageMixin
+from bootstrap_modal_forms.mixins import PassRequestMixin
+
 import json
 
-# Create your views here.
+# ========================================
+# View da página principal
+# ========================================
+
+class MainView(View):
+    def get(self, request, *args, **kwargs):
+        return render (request, 'mainapp/main.html')
+
+    def post(self, request, *args, **kwargs):
+        return render (request, 'mainapp/main.html')
+
+# ========================================
+
+
+
 # ========================================
 # Views do CRUD de endereços
 # ========================================
 
-class EnderecoCreateView(CreateView):
+class EnderecoCreateView(CreateView, SuccessMessageMixin):
     model = Endereco
     fields = '__all__'
-    success_url = reverse_lazy('enderecos-main')
+    success_message = 'Endereço criado com sucesso'
+    #success_url = reverse_lazy (request.GET['origin'])
 
 class EnderecoUpdateView(UpdateView):
     model = Endereco
     fields = '__all__'
-    success_url = reverse_lazy('enderecos-main')
+    success_message = 'Endereço atualizado com sucesso'
+    #success_url = reverse_lazy (request.GET['origin'])
 
 class EnderecoDeleteView (DeleteView):
-    model = Endereco
-    success_url = reverse_lazy('enderecos-main')
 
-class EnderecoDetailView(DetailView):
     model = Endereco
-    context_object_name = 'endereco'
+    success_message = 'Endereço excluído com sucesso'
+    #success_url = reverse_lazy (request.GET['origin'])
 
-class EnderecosView (ListView):
-    model = Endereco
 
-#def index(request):
-#    return HttpResponse("Hello, world. Index!")
 def enderecoByCepView (request, cep):
     try:
         endereco = serializers.serialize ('json', [ Endereco.getEnderecoByCep(str(cep)) ])
@@ -55,10 +70,21 @@ class DestinatarioCreateView(CreateView):
     fields = '__all__'
     success_url = reverse_lazy('destinatarios-main')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['endereco_form'] = EnderecoForm()
+        return context
+    
+
 class DestinatarioUpdateView(UpdateView):
     model = Destinatario
     fields = '__all__'
     success_url = reverse_lazy('destinatarios-main')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['endereco_form'] = EnderecoForm()
+        return context
 
 class DestinatarioDeleteView (DeleteView):
     model = Destinatario
@@ -73,33 +99,6 @@ class DestinatariosView (ListView):
 
 # ========================================
 
-
-# ========================================
-# Views do CRUD de Telefone
-# ========================================
-
-class TelefoneCreateView(CreateView):
-    model = Telefone
-    fields = '__all__'
-    success_url = reverse_lazy('telefones-main')
-
-class TelefoneUpdateView(UpdateView):
-    model = Telefone
-    fields = '__all__'
-    success_url = reverse_lazy('telefones-main')
-
-class TelefoneDeleteView (DeleteView):
-    model = Telefone
-    success_url = reverse_lazy('telefones-main')
-
-class TelefoneDetailView(DetailView):
-    model = Telefone
-    context_object_name = 'telefone'
-
-class TelefonesView (ListView):
-    model = Telefone
-
-# ========================================
 
 
 # ========================================
@@ -153,7 +152,7 @@ class EmbalagemDetailView(DetailView):
     context_object_name = 'embalagem'
 
 class EmbalagensView (ListView):
-    model = Telefone
+    model = Embalagem
 
 # ========================================
 
